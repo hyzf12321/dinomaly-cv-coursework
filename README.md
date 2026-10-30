@@ -6,6 +6,8 @@
 **当前状态（2026-10-30）：服务器到位前的代码准备；没有真实实验结果。**
 
 公开代码仓库：[hyzf12321/dinomaly-cv-coursework](https://github.com/hyzf12321/dinomaly-cv-coursework)。
+
+首次阅读请看[仓库导览与提交规则](docs/REPOSITORY_GUIDE.md)：包含目录分类、配置字段注解、必要上传范围及 Git 管理流程。代码在阶段检查完成后同步；数据、环境与缓存保持本地，训练权重后续通过 Releases 发布。
 6 组本机 CPU 测试已通过，使用随机权重或合成数据。Python 3.8 / Linux CUDA 候选环境尚未验证；默认 ViT-Base、392×392、batch=16 的 GPU 显存和耗时仍待服务器检查。
 
 ## 来源

@@ -16,3 +16,4 @@ __pycache__/
 *.key
 credentials*
 !results/README.md
+/docs/cpu-test-log.txt
