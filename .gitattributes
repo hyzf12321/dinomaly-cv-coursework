@@ -1,0 +1,2 @@
+# Preserve upstream bytes so SOURCE.json hashes also verify on Linux clones.
+* -text
