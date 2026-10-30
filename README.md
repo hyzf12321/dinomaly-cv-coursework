@@ -2,6 +2,10 @@
 
 复现与分析 CVPR 2025 Dinomaly，沿用 MVTec AD 全部 15 类的统一模型设置，不将已有机制包装为原创。**当前仅完成服务器前准备，没有真实实验结果。**
 
+这里的代码是后续实验要使用的程序：按配置训练和保存/恢复模型，用统一协议评测，再汇总真实结果。提前准备代码不代表已经训练；当前没有可评分为真实实验成果的指标、训练权重或结论。服务器到位后先验证默认配置，再运行正式实验。
+
+**供课程检查：** 仓库公开，老师可直接浏览代码、配置、Git 提交历史和后续真实结果；权重在完成训练并核验后提供 Releases 下载链接。当前入口和设置见下文，结果目录暂不创建。
+
 ## 目录
 
 | 位置 | 用途 |
@@ -82,6 +86,8 @@ python run.py summarize runs/B-s1/eval/evaluation.json runs/F-s1/eval/evaluation
 **只公开必要产物：** 代码、实际配置、核验后的结果 CSV、必要图表和日志摘要。数据、环境、缓存、凭据、全部运行数组和优化器断点保持本地或单独备份。公开来源记录前检查个人信息和本机路径；论文 Word/PDF 默认不公开。真实实验完成后，推理权重通过 Releases 发布，清单给出配置、种子、更新步、代码版本、SHA256、下载地址和对应评测；发布前从干净目录重载核验。
 
 ## 来源、许可与引用
+
+采用宽松的 **Apache-2.0**，与上游保持一致：允许按许可免费使用、复制、修改和再分发，保留原版权、许可证及必要归属说明即可，不额外增加本课程项目的用途限制。许可证已有，不需要等实验开始再配置。公开仓库允许所有人查看、下载、Fork 并修改自己的副本、提交 Pull Request；直接推送到本仓库需要所有者或协作者写权限，这是 GitHub 访问控制，与许可证不同。老师查看评分无需写权限。[许可条款](https://www.apache.org/licenses/LICENSE-2.0.txt) · [GitHub 权限说明](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/repository-access-and-collaboration/permission-levels-for-a-personal-account-repository)。
 
 - [官方仓库](https://github.com/guojiajeremy/Dinomaly)，固定提交 `1f252be03a918789b19848f0ca37166e7c28dada`；[原始训练入口](https://github.com/guojiajeremy/Dinomaly/blob/1f252be03a918789b19848f0ca37166e7c28dada/dinomaly_mvtec_uni.py)。
 - Guo, Jia; Lu, Shuai; Zhang, Weihang; Chen, Fang; Li, Huiqi; Liao, Hongen. [Dinomaly: The Less Is More Philosophy in Multi-Class Unsupervised Anomaly Detection](https://openaccess.thecvf.com/content/CVPR2025/html/Guo_Dinomaly_The_Less_Is_More_Philosophy_in_Multi-Class_Unsupervised_Anomaly_CVPR_2025_paper.html). CVPR 2025, 20405–20415。
