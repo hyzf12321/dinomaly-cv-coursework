@@ -1,70 +1,59 @@
 # Dinomaly 计算机视觉课程复现
 
-《Dinomaly 多类别无监督视觉异常检测方法的复现与分析》的实验代码。
-复现对象为 **CVPR 2025 Dinomaly**，不是 Dinomaly2，也不将已有机制作为原创算法。
+复现与分析 CVPR 2025 Dinomaly，沿用 MVTec AD 全部 15 类的统一模型设置，不将已有机制包装为原创。**当前仅完成服务器前准备，没有真实实验结果。**
 
-**当前状态（2026-10-30）：服务器到位前的代码准备；没有真实实验结果。**
+## 目录
 
-公开代码仓库：[hyzf12321/dinomaly-cv-coursework](https://github.com/hyzf12321/dinomaly-cv-coursework)。
+| 位置 | 用途 |
+|---|---|
+| `run.py` | 数据检查、训练、评测、汇总入口 |
+| `configs/` | B、F、A1、A2、A3 五组配置 |
+| `course/` | 模型装配、数据读取、训练与断点、固定评测及汇总 |
+| `tests/` | CPU 随机权重/合成数据功能检查，不是论文结果 |
+| `vendor/` | 实际依赖的上游源码、原许可和 SHA256 来源清单 |
+| `requirements.txt` | Linux CUDA 候选依赖，尚未在服务器验证 |
 
-首次阅读请看[仓库导览与提交规则](docs/REPOSITORY_GUIDE.md)：包含目录分类、配置字段注解、必要上传范围及 Git 管理流程。代码在阶段检查完成后同步；数据、环境与缓存保持本地，训练权重后续通过 Releases 发布。
-6 组本机 CPU 测试已通过，使用随机权重或合成数据。Python 3.8 / Linux CUDA 候选环境尚未验证；默认 ViT-Base、392×392、batch=16 的 GPU 显存和耗时仍待服务器检查。
+说明集中在本文件；真实结果产生后再建立结果目录。数据、环境、缓存和训练输出不进入 Git。
 
-## 来源
+## 实验设置
 
-- [官方仓库](https://github.com/guojiajeremy/Dinomaly)，固定提交 `1f252be03a918789b19848f0ca37166e7c28dada`。
-- [CVPR 2025 论文](https://openaccess.thecvf.com/content/CVPR2025/html/Guo_Dinomaly_The_Less_Is_More_Philosophy_in_Multi-Class_Unsupervised_Anomaly_CVPR_2025_paper.html)。
-- 官方实现的运行相关依赖保留在 `vendor/dinomaly/`；逐文件 SHA256 见 `vendor/SOURCE.json`。这些文件没有修改。
-- 新增实现位于 `course/` 和 `run.py`：只增加配置、数据校验、运行记录、断点和统一评测。许可及第三方声明见 [NOTICE](NOTICE.md) 和 [LICENSE](LICENSE)。
-
-## 实验矩阵
-
-所有配置采用一个覆盖 MVTec AD 全部 15 类的统一模型，公开预训练 DINOv2 **ViT-Base/14 + 4 register tokens**，编码器冻结。缩放 448×448、中心裁剪 392×392，batch=16，10,000 个优化器更新步。
+默认冻结公开预训练 DINOv2 **ViT-Base/14（4 register tokens）**；缩放 448×448，中心裁剪 392×392，batch=16，10,000 个优化器更新步。编码器目标层 2–9、解码器 8 层，分组监督使用 `[0,1,2,3]`、`[4,5,6,7]`。
 
 | 配置 | 瓶颈 Dropout | 注意力 | 监督 | 损失 |
 |---|---:|---|---|---|
-| B | 0 | Softmax | 8 层逐层重建 | 普通全局余弦 |
-| F | 0.2 | LinearAttention2 | 两组融合重建 | 宽松余弦 |
-| A1 | 0 | LinearAttention2 | 两组融合重建 | 宽松余弦 |
-| A2 | 0.2 | Softmax | 两组融合重建 | 宽松余弦 |
-| A3 | 0.2 | LinearAttention2 | 两组融合重建 | 普通全局余弦 |
+| B：普通重建基线 | 0 | Softmax | 八层逐层 | 普通全局余弦 |
+| F：完整方法 | 0.2 | LinearAttention2 | 两组融合 | 宽松余弦 |
+| A1：关闭噪声 | 0 | LinearAttention2 | 两组融合 | 宽松余弦 |
+| A2：替换注意力 | 0.2 | Softmax | 两组融合 | 宽松余弦 |
+| A3：替换损失 | 0.2 | LinearAttention2 | 两组融合 | 普通全局余弦 |
 
-B 按论文第 4.4 节的普通重建基线构造，逐层监督由固定源码的 ViTill 单层融合组实现；不是把 F 的三个开关同时关闭后仍保留分组监督。F/A1/A2/A3 的两组均为 `[0,1,2,3]`、`[4,5,6,7]`，目标编码器层为 `[2,3,4,5,6,7,8,9]`，解码器 8 层。宽松损失保留官方梯度钩子实现，`p=min(0.9*step/1000,0.9)`、`factor=0.1`。
+五组先运行种子 1，B/F 再成对追加种子 2、3，目标九次训练。使用固定终点，不根据测试指标选择模型。作者的 20,000 步权重只能另作参考。
 
-先运行五组种子 1，再为 B/F 成对追加种子 2、3，共 9 次。清单见 `configs/run-matrix.csv`。固定终点，不根据测试集选最佳 checkpoint。作者发布的 20,000 步权重不进入自己训练的 10,000 步主对照。
+配置字段：`encoder` 为 base/small 主干；`image_size/crop_size` 为缩放/裁剪；`batch_size/steps` 为物理 batch/更新步；`warmup_steps/lr/final_lr` 控制学习率；`weight_decay/grad_clip` 为权重衰减/梯度裁剪；`noise_dropout/attention/supervision/loss` 对应表中机制；`save_every` 为断点间隔；`eval_size/max_ratio` 为评测尺寸/最高分像素比例；`workers` 为加载进程数；`variant` 为实验编号。JSON 不添加注释，避免破坏格式。
 
-## 环境与目录
+## 安装与检查
 
-服务器建议 Linux x86_64 / RTX 3090 24GB / Python 3.8，torch 1.12.0+cu113 与 torchvision 0.13.0+cu113。以下命令仅为服务器准备说明，尚未在 Linux 执行：
+服务器建议 Linux x86_64、RTX 3090 24GB、Python 3.8、torch 1.12.0+cu113 / torchvision 0.13.0+cu113。以下安装命令尚未在服务器执行：
 
 ```bash
 python3.8 -m venv .venv
 source .venv/bin/activate
 python -m pip install 'pip<25' 'setuptools<70' wheel
 python -m pip install torch==1.12.0+cu113 torchvision==0.13.0+cu113 --extra-index-url https://download.pytorch.org/whl/cu113
-python -m pip install --no-build-isolation -r requirements-server-candidate-lock.txt
+python -m pip install --no-build-isolation -r requirements.txt
 python -m pip check
 python tests/test_workflow.py
 ```
 
-ptflops 0.7 需要源码构建，所以先安装 torch，再使用 `--no-build-isolation`。pandas 保持 1.3.5，官方 AUPRO 使用 `DataFrame.append`；不要单独升级到 2.x。xFormers 明确禁用。CPU 实测依赖另见 `requirements-cpu-verified-lock.txt`，不能将其当成 GPU 已验证清单。
+ptflops 0.7 需要源码构建；先装 torch，再安装其余依赖。pandas 保持 1.3.5，官方 AUPRO 使用 `DataFrame.append`；xFormers 禁用。CPU 实测完整依赖留存在课程项目的环境兼容性检查材料中，不重复放进仓库。
 
-在本仓库内建立以下本地目录，均已被 Git 忽略；本机仓库本身也位于用户指定的大作业总目录内：
+六组 CPU 检查覆盖五种随机 ViT-Small/56×56 路径、与官方评测的数值对照、小型合成网络续训与权重重载、掩码配对、配置保护和十五类合成数据评测/汇总。精简上游副本后必须从干净代码副本重跑这些检查。默认 ViT-Base/392/batch=16 的 GPU 显存、耗时和真实数据路径仍待验证。
 
-```text
-data/mvtec/                 # 数据集
-weights/                   # 公开预训练编码器
-runs/                      # checkpoint、日志与逐样本预测
-results/                   # 后续核验后提交的表格、来源记录和必要图表
-```
+## 数据与运行
 
-数据来自 [MVTec AD 官方页面](https://www.mvtec.com/company/research/datasets/mvtec-ad)。保留 `category/train/good/*.png`、`category/test/defect/*.png`、`category/ground_truth/defect/*_mask.png` 原始划分；不重新随机划分或混入异常训练样本。数据使用遵守其官方许可，不上传数据。
+服务器到位后再获取 [MVTec AD](https://www.mvtec.com/company/research/datasets/mvtec-ad) 和[官方 DINOv2 register 编码器](https://dl.fbaipublicfiles.com/dinov2/dinov2_vitb14/dinov2_vitb14_reg4_pretrain.pth)，分别放在 `data/mvtec/`、`weights/`。保留官方 `category/train/good`、`test/defect`、`ground_truth/defect/*_mask.png` 划分，训练数据仅正常样本。遵守原数据及权重许可，不重新上传数据。
 
-编码器来源为官方源码中使用的 [DINOv2 ViT-Base register 预训练文件](https://dl.fbaipublicfiles.com/dinov2/dinov2_vitb14/dinov2_vitb14_reg4_pretrain.pth)。**当前没有下载。** 到服务器后再获取，记录来源和 SHA256；训练入口要求本地文件，严格加载，禁止随机权重冒充预训练编码器。ViT-Small 仅作为计划书的统一降级方案。
-
-## 命令
-
-在仓库根目录运行。以下真实数据命令尚未执行：
+以下真实数据命令尚未执行；B/A1/A2/A3 更换配置名，重复实验更换种子和独立输出目录：
 
 ```bash
 python run.py validate-data --data data/mvtec --output runs/data-validation.json
@@ -74,39 +63,27 @@ python run.py evaluate --checkpoint runs/F-s1/inference.pt --data data/mvtec --d
 python run.py summarize runs/B-s1/eval/evaluation.json runs/F-s1/eval/evaluation.json --output runs/summary-s1
 ```
 
-更换 `configs/B.json`、`A1.json`、`A2.json`、`A3.json` 和种子即可运行对应配置；输出目录必须独立。已有非空训练目录必须明确续训；评测和汇总目录不得覆盖。
+训练要求本地预训练文件并严格加载。每 500 步滚动原子保存 `last.pt`（模型、优化器、scheduler、随机数和数据位置），终点导出含完整编码器的 `inference.pt`。每次运行记录配置、Git 版本、源码/编码器/数据哈希、环境、损失、会话耗时及显存。续训拒绝配置、种子、代码、数据或编码器不一致；只加载可信 checkpoint。
 
-### 权重与续训
+数据处理无随机增强；使用独立 `seed+epoch` shuffle 和 drop_last，以支持恢复，样本顺序与官方共享全局随机生成器不同，论文须披露。CPU 合成网络续训一致性不等于 CUDA 重现性已验证。宽松损失直接复用官方梯度钩子，`p=min(0.9*step/1000,0.9)`、`factor=0.1`。
 
-- `last.pt`：每 500 步及终点原子替换保存，包含全模型、优化器、scheduler、随机数状态、epoch 和 batch 位置；避免堆积全部中间模型。崩溃后从最近已保存的更新步恢复。
-- `inference.pt`：固定终点自动导出，包含完整编码器和重建网络，另含配置、更新步、来源记录；不依赖再次下载编码器即可评测。
-- 每次训练记录 config、源文件哈希、Git 提交、预训练文件 SHA256、训练数据逐文件哈希、环境及逐步损失。`completion.json` 包含终点、会话耗时、显存峰值和最终文件校验值。
-- 续训拒绝配置、种子、代码、数据或编码器变化。CPU 合成检查已验证中途恢复与连续训练逐参数一致；CUDA 重现性仍待同硬件实测。
-- 数据预处理无随机增强。为可恢复性使用独立的 `seed+epoch` 生成每轮 shuffle，drop_last=True；这与官方共享全局随机数生成器的样本顺序有差别，论文应披露。AdamW、学习率、梯度裁剪和核心方法计算沿用官方。
-- PyTorch checkpoint 只加载自己生成或官方可信来源的文件。
+短训练从 F 复制配置到 `runs/`，设 steps=200、save_every=50，保留默认输入、batch、主干与 warmup=100，传 `--purpose probe`。不完整断点评测需 `--allow-incomplete`。这两类结果都不能进入正式主汇总；ViT-Small 降级或缩短预算必须在主对照内统一记录。
 
-### 服务器短训练
+## 评测与发布
 
-到服务器后，从 F.json 复制一份到 `runs/probe-config.json`，将 `steps` 设为 200、`save_every` 设为 50，保留默认主干、分辨率、batch 和 warmup=100。使用新输出目录及 `--purpose probe` 训练，再进行真实数据评测。短训练只用于检查 CUDA、预训练加载、损失、显存、耗时和热力图，不能替代正式实验。主汇总入口拒绝 `purpose=probe`。
+逐类报告图像 AUROC、像素 AUROC/AP、AUPRO 和十五类宏平均，保存 0–1 原始值。汇总提供跨种子均值、样本标准差（n=1 留空）、B/F 同种子差值和缺失运行清单，拒绝混合数据、编码器、预算、代码或评测协议。
 
-不完整断点评测必须显式传 `--allow-incomplete`，其结果同样不能进入主汇总。正式运行不要根据测试结果调终点。
+评测沿用固定源码 `evaluation_batch(max_ratio=0.01, resize_mask=256)`：余弦距离图平均，先 bilinear/align_corners=True 到裁剪大小，再 bilinear/False 到 256；掩码使用官方 PIL 插值与中心裁剪，再 nearest 到 256 并 >0 二值化；之后 5×5、sigma=4 高斯平滑，图像分数取最高 1% 像素均值。AUPRO 复用官方 `compute_pro`：200 阈值、FPR<0.3，按采样最大 FPR 归一化；不是另行实现的连续积分版本。指标未定义时报错，不猜测填值。
 
-## 固定评测与结果
+输出含 `metrics.csv`、`images.csv`、来源 JSON 和逐类 `.npz`（热力图、掩码、标签、路径），供后续缺陷大小、热力图和失败案例分析使用，逐类在 CPU 累积预测。
 
-图像级 AUROC、像素级 AUROC/AP、AUPRO 保留原始 0–1 数值，逐类和 15 类宏平均均输出。汇总对种子计算均值和样本标准差；n=1 的标准差留空，同时输出 B/F 相同种子的差值与尚缺的计划运行。
+**Git 管理：** 本地持续提交，完成并检查一个阶段后再同步 GitHub；较大改动用分支，不上传临时调试状态。正式训练记录实际提交和源码指纹，重要阶段建立标签。可用已连接的 GitHub 插件同步；本机 `git push` 另需本机认证，不强制覆盖远端。
 
-协议来自固定源码的 `evaluation_batch(..., max_ratio=0.01, resize_mask=256)`：余弦距离图平均，插值到裁剪尺寸时 align_corners=True，再 bilinear/align_corners=False 到 256；掩码按官方 PIL resize/中心裁剪，再 nearest 到 256，使用 >0 二值化；之后施加 5×5、sigma=4 高斯平滑，图像分数取最高 1% 像素均值。**掩码最初的 PIL 插值也被固定，不能临时更换。**
+**只公开必要产物：** 代码、实际配置、核验后的结果 CSV、必要图表和日志摘要。数据、环境、缓存、凭据、全部运行数组和优化器断点保持本地或单独备份。公开来源记录前检查个人信息和本机路径；论文 Word/PDF 默认不公开。真实实验完成后，推理权重通过 Releases 发布，清单给出配置、种子、更新步、代码版本、SHA256、下载地址和对应评测；发布前从干净目录重载核验。
 
-AUPRO 直接复用官方 `compute_pro`：200 阈值、FPR<0.3，并按采样到的最大 FPR 归一化；这不是另行实现的严格连续积分版本。保留这一差异以便追溯；指标未定义时直接报错，不填 0 或猜测值。
+## 来源、许可与引用
 
-评测额外输出：`metrics.csv`、`images.csv`、`evaluation.json`、测试文件哈希，以及每类 `.npz`（原始分数、掩码、标签、相对路径）。这些用于后续缺陷大小、热力图与失败案例分析；分析结论须等待真实实验。每次只在 CPU 累积一个类别的预测，避免将全部测试图驻留 GPU。
-
-## 当前检查与交付边界
-
-```bash
-python tests/test_workflow.py
-```
-
-检查内容见 [阶段验收](docs/PRE_SERVER_ACCEPTANCE.md)。测试文件的合成指标不进入 results，不提供任何可写入论文的真实结果。
-
-公开仓库默认名称 `dinomaly-cv-coursework`。发布流程及权重 Releases 清单要求见 [GitHub 准备](docs/GITHUB.md)。论文 Word/PDF 在真实实验结束后编写，含个人信息的论文默认不公开。
+- [官方仓库](https://github.com/guojiajeremy/Dinomaly)，固定提交 `1f252be03a918789b19848f0ca37166e7c28dada`；[原始训练入口](https://github.com/guojiajeremy/Dinomaly/blob/1f252be03a918789b19848f0ca37166e7c28dada/dinomaly_mvtec_uni.py)。
+- Guo, Jia; Lu, Shuai; Zhang, Weihang; Chen, Fang; Li, Huiqi; Liao, Hongen. [Dinomaly: The Less Is More Philosophy in Multi-Class Unsupervised Anomaly Detection](https://openaccess.thecvf.com/content/CVPR2025/html/Guo_Dinomaly_The_Less_Is_More_Philosophy_in_Multi-Class_Unsupervised_Anomaly_CVPR_2025_paper.html). CVPR 2025, 20405–20415。
+- `vendor/dinomaly/` 仅保留实际导入的上游源码与原许可证；未修改文件内容。来源和逐文件 SHA256 见 `vendor/SOURCE.json`。保留 DINO/DINOv2、优化器等原有版权与许可声明，根许可证不覆盖第三方自己的声明。
+- 新增 `course/`、入口、配置和测试采用 [Apache-2.0](LICENSE)，主要增加运行支持；方法主体、注意力、瓶颈、损失、优化器和 AUPRO 来自上游。本仓库复现 Dinomaly，不是 Dinomaly2，不宣称上述机制原创。
