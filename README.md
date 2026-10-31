@@ -1,8 +1,8 @@
 # Dinomaly 计算机视觉课程复现
 
-复现与分析 CVPR 2025 Dinomaly，沿用 MVTec AD 全部 15 类的统一模型设置，不将已有机制包装为原创。**当前仅完成服务器前准备，没有真实实验结果。**
+复现与分析 CVPR 2025 Dinomaly，沿用 MVTec AD 全部 15 类的统一模型设置，不将已有机制包装为原创。**已完成服务器基础环境与数据核验；正式实验尚未开始。**
 
-这里的代码是后续实验要使用的程序：按配置训练和保存/恢复模型，用统一协议评测，再汇总真实结果。提前准备代码不代表已经训练；当前没有可评分为真实实验成果的指标、训练权重或结论。服务器到位后先验证默认配置，再运行正式实验。
+这里的代码是后续实验要使用的程序：按配置训练和保存/恢复模型，用统一协议评测，再汇总真实结果。提前准备代码不代表已经训练；检查用途的少量训练与单类评测单独保存，不作为论文正式结果；正式训练前先交流确认。
 
 **供课程检查：** 仓库公开，老师可直接浏览代码、配置、Git 提交历史和后续真实结果；权重在完成训练并核验后提供 Releases 下载链接。当前入口和设置见下文，结果目录暂不创建。
 
@@ -15,7 +15,7 @@
 | `course/` | 模型装配、数据读取、训练与断点、固定评测及汇总 |
 | `tests/` | CPU 随机权重/合成数据功能检查，不是论文结果 |
 | `vendor/` | 实际依赖的上游源码、原许可和 SHA256 来源清单 |
-| `requirements.txt` | Linux CUDA 候选依赖，尚未在服务器验证 |
+| `requirements.txt` | Linux CUDA 依赖（RTX 3090 基础环境检查已通过） |
 
 说明集中在本文件；真实结果产生后再建立结果目录。数据、环境、缓存和训练输出不进入 Git。
 
@@ -37,12 +37,12 @@
 
 ## 安装与检查
 
-服务器建议 Linux x86_64、RTX 3090 24GB、Python 3.8、torch 1.12.0+cu113 / torchvision 0.13.0+cu113。以下安装命令尚未在服务器执行：
+服务器建议 Linux x86_64、RTX 3090 24GB、Python 3.8、torch 1.12.0+cu113 / torchvision 0.13.0+cu113。服务器已验证 Python 3.8.20、torch 1.12.0+cu113、torchvision 0.13.0+cu113，pip check 和 CUDA 矩阵运算通过。独立环境安装示例：
 
 ```bash
 python3.8 -m venv .venv
 source .venv/bin/activate
-python -m pip install 'pip<25' 'setuptools<70' wheel
+python -m pip install pip==24.3.1 setuptools==75.3.2 wheel==0.45.1 numpy==1.18.4
 python -m pip install torch==1.12.0+cu113 torchvision==0.13.0+cu113 --extra-index-url https://download.pytorch.org/whl/cu113
 python -m pip install --no-build-isolation -r requirements.txt
 python -m pip check
@@ -51,13 +51,13 @@ python tests/test_workflow.py
 
 ptflops 0.7 需要源码构建；先装 torch，再安装其余依赖。pandas 保持 1.3.5，官方 AUPRO 使用 `DataFrame.append`；xFormers 禁用。CPU 实测完整依赖留存在课程项目的环境兼容性检查材料中，不重复放进仓库。
 
-六组 CPU 检查覆盖五种随机 ViT-Small/56×56 路径、与官方评测的数值对照、小型合成网络续训与权重重载、掩码配对、配置保护和十五类合成数据评测/汇总。精简上游副本后必须从干净代码副本重跑这些检查。默认 ViT-Base/392/batch=16 的 GPU 显存、耗时和真实数据路径仍待验证。
+七组 CPU 检查覆盖五种随机 ViT-Small/56×56 路径、与官方评测的数值对照、小型合成网络续训与权重重载、掩码配对、配置保护和十五类合成数据评测/汇总。精简上游副本后必须从干净代码副本重跑这些检查。新增边缘缺陷校验：原始掩码为空时报错；缺陷被既定中心裁剪移除时保留样本并记录路径。
 
 ## 数据与运行
 
 服务器到位后再获取 [MVTec AD](https://www.mvtec.com/company/research/datasets/mvtec-ad) 和[官方 DINOv2 register 编码器](https://dl.fbaipublicfiles.com/dinov2/dinov2_vitb14/dinov2_vitb14_reg4_pretrain.pth)，分别放在 `data/mvtec/`、`weights/`。保留官方 `category/train/good`、`test/defect`、`ground_truth/defect/*_mask.png` 划分，训练数据仅正常样本。遵守原数据及权重许可，不重新上传数据。
 
-以下真实数据命令尚未执行；B/A1/A2/A3 更换配置名，重复实验更换种子和独立输出目录：
+以下为正式运行命令（尚未启动正式实验）；B/A1/A2/A3 更换配置名，重复实验更换种子和独立输出目录：
 
 ```bash
 python run.py validate-data --data data/mvtec --output runs/data-validation.json
@@ -67,11 +67,13 @@ python run.py evaluate --checkpoint runs/F-s1/inference.pt --data data/mvtec --d
 python run.py summarize runs/B-s1/eval/evaluation.json runs/F-s1/eval/evaluation.json --output runs/summary-s1
 ```
 
+`validate-data` 检查全部图像、配对掩码和哈希；`defects_removed_by_crop` 记录裁剪后空掩码的异常样本，保留原始图像级标签及划分。该限制须在正式分析中披露。
+
 训练要求本地预训练文件并严格加载。每 500 步滚动原子保存 `last.pt`（模型、优化器、scheduler、随机数和数据位置），终点导出含完整编码器的 `inference.pt`。每次运行记录配置、Git 版本、源码/编码器/数据哈希、环境、损失、会话耗时及显存。续训拒绝配置、种子、代码、数据或编码器不一致；只加载可信 checkpoint。
 
 数据处理无随机增强；使用独立 `seed+epoch` shuffle 和 drop_last，以支持恢复，样本顺序与官方共享全局随机生成器不同，论文须披露。CPU 合成网络续训一致性不等于 CUDA 重现性已验证。宽松损失直接复用官方梯度钩子，`p=min(0.9*step/1000,0.9)`、`factor=0.1`。
 
-短训练从 F 复制配置到 `runs/`，设 steps=200、save_every=50，保留默认输入、batch、主干与 warmup=100，传 `--purpose probe`。不完整断点评测需 `--allow-incomplete`。这两类结果都不能进入正式主汇总；ViT-Small 降级或缩短预算必须在主对照内统一记录。
+检查配置复制到 `runs/`，传 `--purpose probe`。按用户要求缩减为 F 10 步、B 2 步，保留默认输入、batch、主干；仅检查配置的 warmup 改为 1 步，正式配置不变。最短真实评测只检查 bottle 类，不代表全 15 类正式结果。不完整断点评测需 `--allow-incomplete`。这两类结果都不能进入正式主汇总；ViT-Small 降级或缩短预算必须在主对照内统一记录。
 
 ## 评测与发布
 

@@ -244,6 +244,36 @@ class WorkflowTests(unittest.TestCase):
                 evaluate(args)
 
 
+    def test_07_edge_defect_validation(self):
+        from run import main
+        with tempfile.TemporaryDirectory(dir=str(rt.ROOT / '.cache')) as tmp:
+            root = Path(tmp)
+            for split, defect in [('train', 'good'), ('test', 'good'), ('test', 'crack')]:
+                directory = root / 'data' / 'bottle' / split / defect
+                directory.mkdir(parents=True)
+                Image.new('RGB', (56, 56)).save(directory / '000.png')
+            directory = root / 'data' / 'bottle' / 'ground_truth' / 'crack'
+            directory.mkdir(parents=True)
+            mask = Image.new('L', (56, 56))
+            mask.paste(255, (0, 0, 3, 3))
+            mask.save(directory / '000_mask.png')
+            cfg = small_config()
+            cfg['crop_size'] = 28
+            rt.write_json(root / 'config.json', cfg)
+            argv = ['run.py', 'validate-data', '--data', str(root / 'data'),
+                    '--config', str(root / 'config.json'), '--output', str(root / 'validation.json')]
+            with patch('course.data.CATEGORIES', ['bottle']), patch.object(sys, 'argv', argv), contextlib.redirect_stdout(io.StringIO()):
+                main()
+            result = json.loads((root / 'validation.json').read_text())
+            self.assertEqual(result['defects_removed_by_crop'], ['bottle/test/crack/000.png'])
+            self.assertEqual(len(result['test']), 2)
+            Image.new('L', (56, 56)).save(directory / '000_mask.png')
+            (root / 'validation.json').unlink()
+            with patch('course.data.CATEGORIES', ['bottle']), patch.object(sys, 'argv', argv):
+                with self.assertRaisesRegex(ValueError, 'Empty original'):
+                    main()
+
+
 if __name__ == '__main__':
     (rt.ROOT / '.cache').mkdir(exist_ok=True)
     unittest.main(verbosity=2)
