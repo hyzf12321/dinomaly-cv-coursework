@@ -1,0 +1,96 @@
+{
+  "training_commit": "11a278013856ce140e8cbdebe20ad275d5100410",
+  "source_fingerprint": "99c239f011fb32d0eca097feda972ecfac4114b3e276a6d056974ec5d311fe01",
+  "assets": [
+    {
+      "run": "B-s1",
+      "config": "configs/B.json",
+      "seed": 1,
+      "steps": 10000,
+      "filename": "B-s1-inference.pt",
+      "sha256": "532ef4934b540732281f8a93e6f4469ff879f22e97b324c5e7b6134925dba225",
+      "bytes": 592143641,
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/B-s1-inference.pt"
+    },
+    {
+      "run": "F-s1",
+      "config": "configs/F.json",
+      "seed": 1,
+      "steps": 10000,
+      "filename": "F-s1-inference.pt",
+      "sha256": "d9017e9dd98b8f5f1e42a1057f3926a103bdf9624783b89153ed1f225dc917c5",
+      "bytes": 592143641,
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/F-s1-inference.pt"
+    },
+    {
+      "run": "A1-s1",
+      "config": "configs/A1.json",
+      "seed": 1,
+      "steps": 10000,
+      "filename": "A1-s1-inference.pt",
+      "sha256": "660daf7508fdc11b659b675bfcae23548784f99375411a757c5aeb403550b82e",
+      "bytes": 592143641,
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/A1-s1-inference.pt"
+    },
+    {
+      "run": "A2-s1",
+      "config": "configs/A2.json",
+      "seed": 1,
+      "steps": 10000,
+      "filename": "A2-s1-inference.pt",
+      "sha256": "a205f7c573c1030e7b7f6b02ee459758326405f023597cc03eacb38859ceb0c2",
+      "bytes": 592143641,
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/A2-s1-inference.pt"
+    },
+    {
+      "run": "A3-s1",
+      "config": "configs/A3.json",
+      "seed": 1,
+      "steps": 10000,
+      "filename": "A3-s1-inference.pt",
+      "sha256": "310e189c4f21806a9793dcb903a378d0166ec6b07c150dffcedb1cde0fbaeafa",
+      "bytes": 592143641,
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/A3-s1-inference.pt"
+    },
+    {
+      "run": "B-s2",
+      "config": "configs/B.json",
+      "seed": 2,
+      "steps": 10000,
+      "filename": "B-s2-inference.pt",
+      "sha256": "1df58cb036a43ef8e20e716748eaf96241805dcb405f1caa1d2aac312909eee7",
+      "bytes": 592143641,
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/B-s2-inference.pt"
+    },
+    {
+      "run": "F-s2",
+      "config": "configs/F.json",
+      "seed": 2,
+      "steps": 10000,
+      "filename": "F-s2-inference.pt",
+      "sha256": "b209675f677aa627b1a423a902f6a9bff2a70586f4539faaf68dc2ca76b68671",
+      "bytes": 592143641,
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/F-s2-inference.pt"
+    },
+    {
+      "run": "B-s3",
+      "config": "configs/B.json",
+      "seed": 3,
+      "steps": 10000,
+      "filename": "B-s3-inference.pt",
+      "sha256": "d30a3b12ae4d50e180d28737a8ef18faabfdabbf2c2df99029de849ad64e6d42",
+      "bytes": 592143641,
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/B-s3-inference.pt"
+    },
+    {
+      "run": "F-s3",
+      "config": "configs/F.json",
+      "seed": 3,
+      "steps": 10000,
+      "filename": "F-s3-inference.pt",
+      "sha256": "0e9fc9c7b56499c5aa779c9555592e3ac336665e307dcc1e5fc80df0c5767711",
+      "bytes": 592143641,
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/F-s3-inference.pt"
+    }
+  ]
+}
