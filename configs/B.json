@@ -1,0 +1,21 @@
+{
+  "encoder": "base",
+  "image_size": 448,
+  "crop_size": 392,
+  "batch_size": 16,
+  "steps": 10000,
+  "warmup_steps": 100,
+  "lr": 0.002,
+  "final_lr": 0.0002,
+  "weight_decay": 0.0001,
+  "grad_clip": 0.1,
+  "noise_dropout": 0.0,
+  "attention": "softmax",
+  "supervision": "dense",
+  "loss": "cosine",
+  "save_every": 500,
+  "eval_size": 256,
+  "max_ratio": 0.01,
+  "workers": 4,
+  "variant": "B"
+}
