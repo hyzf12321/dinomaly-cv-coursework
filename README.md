@@ -78,11 +78,12 @@ bash reproduce.sh
 
 ## 用已训练权重评测
 
-[权重清单](results/weights.json)记录九份终点权重的配置、种子、步数、下载地址与 SHA-256。权重见 [GitHub Release](https://github.com/hyzf12321/dinomaly-cv-coursework/releases/tag/mvtec-ad-nine-runs)。
+[权重清单](results/weights.json)记录九份终点权重的配置、种子、步数、下载地址、ZIP 内路径与解压后权重的 SHA-256。每组的 `02-model-evaluation-logs.zip` 提供 `inference.pt`，`01-training-checkpoint.zip` 提供用于续训的 `last.pt`。备份见 [GitHub Release](https://github.com/hyzf12321/dinomaly-cv-coursework/releases/tag/mvtec-ad-nine-runs)。
 
 ```bash
 mkdir -p weights
-curl -fL 'https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/F-s1-inference.pt' -o weights/F-s1-inference.pt
+curl -fL 'https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/F-s1-02-model-evaluation-logs.zip' -o weights/F-s1-02-model-evaluation-logs.zip
+unzip -p weights/F-s1-02-model-evaluation-logs.zip 'F-s1/inference.pt' > weights/F-s1-inference.pt
 printf '%s  %s\n' 'd9017e9dd98b8f5f1e42a1057f3926a103bdf9624783b89153ed1f225dc917c5' weights/F-s1-inference.pt | sha256sum -c
 python run.py evaluate --checkpoint weights/F-s1-inference.pt --data data/mvtec --device cuda:0 --output runs/F-s1-release-eval
 ```
