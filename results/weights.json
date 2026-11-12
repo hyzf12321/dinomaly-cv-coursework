@@ -10,7 +10,9 @@
       "filename": "B-s1-inference.pt",
       "sha256": "532ef4934b540732281f8a93e6f4469ff879f22e97b324c5e7b6134925dba225",
       "bytes": 592143641,
-      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/B-s1-inference.pt"
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/B-s1-02-model-evaluation-logs.zip",
+      "archive_member": "B-s1/inference.pt",
+      "archive_filename": "B-s1-02-model-evaluation-logs.zip"
     },
     {
       "run": "F-s1",
@@ -20,7 +22,9 @@
       "filename": "F-s1-inference.pt",
       "sha256": "d9017e9dd98b8f5f1e42a1057f3926a103bdf9624783b89153ed1f225dc917c5",
       "bytes": 592143641,
-      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/F-s1-inference.pt"
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/F-s1-02-model-evaluation-logs.zip",
+      "archive_member": "F-s1/inference.pt",
+      "archive_filename": "F-s1-02-model-evaluation-logs.zip"
     },
     {
       "run": "A1-s1",
@@ -30,7 +34,9 @@
       "filename": "A1-s1-inference.pt",
       "sha256": "660daf7508fdc11b659b675bfcae23548784f99375411a757c5aeb403550b82e",
       "bytes": 592143641,
-      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/A1-s1-inference.pt"
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/A1-s1-02-model-evaluation-logs.zip",
+      "archive_member": "A1-s1/inference.pt",
+      "archive_filename": "A1-s1-02-model-evaluation-logs.zip"
     },
     {
       "run": "A2-s1",
@@ -40,7 +46,9 @@
       "filename": "A2-s1-inference.pt",
       "sha256": "a205f7c573c1030e7b7f6b02ee459758326405f023597cc03eacb38859ceb0c2",
       "bytes": 592143641,
-      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/A2-s1-inference.pt"
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/A2-s1-02-model-evaluation-logs.zip",
+      "archive_member": "A2-s1/inference.pt",
+      "archive_filename": "A2-s1-02-model-evaluation-logs.zip"
     },
     {
       "run": "A3-s1",
@@ -50,7 +58,9 @@
       "filename": "A3-s1-inference.pt",
       "sha256": "310e189c4f21806a9793dcb903a378d0166ec6b07c150dffcedb1cde0fbaeafa",
       "bytes": 592143641,
-      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/A3-s1-inference.pt"
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/A3-s1-02-model-evaluation-logs.zip",
+      "archive_member": "A3-s1/inference.pt",
+      "archive_filename": "A3-s1-02-model-evaluation-logs.zip"
     },
     {
       "run": "B-s2",
@@ -60,7 +70,9 @@
       "filename": "B-s2-inference.pt",
       "sha256": "1df58cb036a43ef8e20e716748eaf96241805dcb405f1caa1d2aac312909eee7",
       "bytes": 592143641,
-      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/B-s2-inference.pt"
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/B-s2-02-model-evaluation-logs.zip",
+      "archive_member": "B-s2/inference.pt",
+      "archive_filename": "B-s2-02-model-evaluation-logs.zip"
     },
     {
       "run": "F-s2",
@@ -70,7 +82,9 @@
       "filename": "F-s2-inference.pt",
       "sha256": "b209675f677aa627b1a423a902f6a9bff2a70586f4539faaf68dc2ca76b68671",
       "bytes": 592143641,
-      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/F-s2-inference.pt"
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/F-s2-02-model-evaluation-logs.zip",
+      "archive_member": "F-s2/inference.pt",
+      "archive_filename": "F-s2-02-model-evaluation-logs.zip"
     },
     {
       "run": "B-s3",
@@ -80,7 +94,9 @@
       "filename": "B-s3-inference.pt",
       "sha256": "d30a3b12ae4d50e180d28737a8ef18faabfdabbf2c2df99029de849ad64e6d42",
       "bytes": 592143641,
-      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/B-s3-inference.pt"
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/B-s3-02-model-evaluation-logs.zip",
+      "archive_member": "B-s3/inference.pt",
+      "archive_filename": "B-s3-02-model-evaluation-logs.zip"
     },
     {
       "run": "F-s3",
@@ -90,7 +106,9 @@
       "filename": "F-s3-inference.pt",
       "sha256": "0e9fc9c7b56499c5aa779c9555592e3ac336665e307dcc1e5fc80df0c5767711",
       "bytes": 592143641,
-      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/F-s3-inference.pt"
+      "url": "https://github.com/hyzf12321/dinomaly-cv-coursework/releases/download/mvtec-ad-nine-runs/F-s3-02-model-evaluation-logs.zip",
+      "archive_member": "F-s3/inference.pt",
+      "archive_filename": "F-s3-02-model-evaluation-logs.zip"
     }
   ]
 }
